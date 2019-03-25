@@ -40,10 +40,11 @@ func Close(p *PredictorData) {}
 
 1. Add caffe2 as a library dependency to your mobile application
 2. Add go-caffe2 binding as a library dependency to your mobile application
-3. Create a new predictor using New()
-4. Perform inference using Predict()
-5. Read Top-1 predicted label using ReadPredictionOutput()
-6. Delete predictor using Close()
+3. Add model and labels file to the application ensuring that the filepaths are accessible expilcitly
+4. Create a new predictor using New()
+5. Perform inference using Predict()
+6. Read Top-1 predicted label using ReadPredictionOutput()
+7. Delete predictor using Close()
 
 ## Caffe2 Installation
 
