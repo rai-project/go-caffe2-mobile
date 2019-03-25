@@ -135,19 +135,17 @@ static void set_operator_engine(NetDef *net, int mode) {
 	net->mutable_device_option()->set_device_type(TypeToProto(DeviceType::CPU));
   
 	for (int i = 0; i < net->op_size(); i++) {
-    caffe2::OperatorDef *op_def = net->mutable_op(i);
-    //op_def->mutable_device_option()->set_device_type(TypeToProto(mode));
+		caffe2::OperatorDef *op_def = net->mutable_op(i);
+		//op_def->mutable_device_option()->set_device_type(TypeToProto(mode));
 		op_def->mutable_device_option()->set_device_type(TypeToProto(DeviceType::CPU));
   }
 }
 
 PredictorContext NewCaffe2(char *init_net_file, char *pred_net_file, int batch,
                           int mode) {
-  try {
-    int mode_temp = 0;
-    if (mode == 1) {
-      mode_temp = 1;
-    }
+	try {
+		int mode_temp = 0;
+		if (mode == 1) mode_temp = 1;
 		NetDef init_net, pred_net;
 		if(!ReadProtoFromFile(init_net_file, &init_net)) {
 			throw std::runtime_error("cannot read init net file");	
@@ -157,91 +155,88 @@ PredictorContext NewCaffe2(char *init_net_file, char *pred_net_file, int batch,
 			throw std::runtime_error("cannot read pred net file");	
 		}
 		set_operator_engine(&pred_net, mode);
-    const auto ctx = new Predictor(&init_net, &pred_net, batch,
+		const auto ctx = new Predictor(&init_net, &pred_net, batch,
                                    mode_temp);
-    return (void *)ctx;
+		return (void *)ctx;
   } catch (const std::invalid_argument &ex) {
-    //LOG(ERROR) << "exception: " << ex.what();
-    errno = EINVAL;
-    return nullptr;
+		errno = EINVAL;
+		return nullptr;
   }
-
 
 }
 
 void SetModeCaffe2(int mode) {
-  if(mode == 1) {
+	if(mode == 1) {
 		// Do nothing as of now
-  }
+	}
 }
 
 void InitCaffe2() {}
 
 void PredictCaffe2(PredictorContext pred, float* inputData, const char* input_type, const int batch, const int channels, const int width, const int height) {
-  auto predictor = (Predictor *)pred;
-  if (predictor == nullptr) {
-    return;
-  }
+	auto predictor = (Predictor *)pred;
+	if (predictor == nullptr) {
+		return;
+	}
 	
-  predictor->Predict(inputData, input_type, batch, channels, width, height);
-  // Predict(float* inputData, std::string input_type, const int batch, const int channels, const int width, const int height)
+	predictor->Predict(inputData, input_type, batch, channels, width, height);
 	return;
 }
 
 const float*GetPredictionsCaffe2(PredictorContext pred) {
-  auto predictor = (Predictor *)pred;
-  if (predictor == nullptr) {
-    return nullptr;
-  }
+	auto predictor = (Predictor *)pred;
+	if (predictor == nullptr) {
+		return nullptr;
+	}
 	if(predictor->result_ == nullptr) {
 		throw std::runtime_error("expected a non-nil result");	
 	}
-  return (float*)predictor->result_;
+	return (float*)predictor->result_;
 }
 
 void DeleteCaffe2(PredictorContext pred) {
-  auto predictor = (Predictor *)pred;
-  if (predictor == nullptr) {
-    return;
-  }
+	auto predictor = (Predictor *)pred;
+	if (predictor == nullptr) {
+		return;
+	}
 	if(predictor->ws_ != nullptr) {
 		delete predictor->ws_;	
 	}
 	if(predictor->result_) {
 		free(predictor->result_);	
 	}
-  delete predictor;
+	delete predictor;
 }
 
 int GetWidthCaffe2(PredictorContext pred) {
-  auto predictor = (Predictor *)pred;
-  if (predictor == nullptr) {
-    return 0;
-  }
-  return predictor->width_;
+	auto predictor = (Predictor *)pred;
+	if (predictor == nullptr) {
+		return 0;
+	}
+	return predictor->width_;
 }
 
 int GetHeightCaffe2(PredictorContext pred) {
-  auto predictor = (Predictor *)pred;
-  if (predictor == nullptr) {
-    return 0;
-  }
-  return predictor->height_;
+	auto predictor = (Predictor *)pred;
+	if (predictor == nullptr) {
+		return 0;
+	}
+	return predictor->height_;
 }
 
 int GetChannelsCaffe2(PredictorContext pred) {
-  auto predictor = (Predictor *)pred;
-  if (predictor == nullptr) {
-    return 0;
-  }
-  return predictor->channels_;
+	auto predictor = (Predictor *)pred;
+	if (predictor == nullptr) {
+		return 0;
+	}
+	return predictor->channels_;
 }
 
 int GetPredLenCaffe2(PredictorContext pred) {
-  auto predictor = (Predictor *)pred;
-  if (predictor == nullptr) {
-    return 0;
-  }
-  return predictor->pred_len_;
+	auto predictor = (Predictor *)pred;
+	if (predictor == nullptr) {
+		return 0;
+	}
+	return predictor->pred_len_;
 }
 
